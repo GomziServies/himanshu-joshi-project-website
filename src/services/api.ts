@@ -2,32 +2,32 @@ import { Product, Banner, DevoteeSankalp, OrderResponse, PaymentVerificationResp
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-// Fallback initial offerings in case API is temporarily offline
+// Sole consecrated offering currently available on the sanctuary storefront
 export const FALLBACK_PRODUCTS: Product[] = [
   {
     _id: 'prod_fallback_1',
-    title: 'Shivling Sthapana & Rudrabhishek Offering',
+    title: 'Salahkareshwar Shivling Sthapana',
     slug: 'shivling-sthapana',
     category: 'Offering',
-    subtitle: 'Sacred Narmadeshwar Shivling Consecration with Vedic Pran Pratishtha & Bilva Abhishek',
+    subtitle: 'श्री सलाहकारेश्वर महादेव शिवलिंग स्थापना एवं षोडशोपचार वैदिक प्रतिष्ठा',
     price: 5100,
     originalPrice: 7100,
-    shortDescription: 'Consecrate your home with an authentic Narmadeshwar Shivling installed with Vedic rituals, followed by a personalized Rudrabhishek performed in your family Gotra.',
-    description: 'The sacred Shivling Sthapana is among the most revered Vedic rituals described in the Shiva Purana. Sourced directly from the sanctified Narmada River bed, the naturally rounded Swayambhu Narmadeshwar stone holds the vibrational resonance of Lord Shiva.\n\nDuring this auspicious Seva:\n1. Ganpati Puja & Punyahavachanam for purifying the altar.\n2. Kalash Sthapana & Invocation of Divine Deities.\n3. Pran Pratishtha transferring divine cosmic energy into the Lingam.\n4. Detailed Rudrabhishek with 5 sacred liquids (Panchamrit) and bilva patra offerings.\n5. Sankalp blessing uttered in the devotee\'s specific Gotra and Nakshatra.',
+    shortDescription: 'Consecrate your home with an authentic Swayambhu Shivling blessed at Sri Salahkareshwar Mahadev Tirth, installed with Vedic rituals.',
+    description: 'The sacred Shivling Sthapana is performed according to ancient Shiva Agamas at Sri Salahkareshwar Mahadev Tirth in Gotri, Vadodara. The naturally sanctified Swayambhu stone holds the vibrational resonance of Lord Shiva.\n\nDuring this auspicious Seva:\n1. Ganpati Puja & Punyahavachanam for purifying the altar.\n2. Kalash Sthapana & Invocation of Divine Deities.\n3. Pran Pratishtha transferring divine cosmic energy into the Lingam.\n4. Detailed Rudrabhishek with 5 sacred liquids (Panchamrit) and bilva patra offerings.\n5. Sankalp blessing uttered in the devotee\'s specific Gotra and Nakshatra.',
     images: [
-      'https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?q=80&w=1200&auto=format&fit=crop'
+      '/salahkareshwar-shivling.jpg',
+      '/punya-passport-logo.jpg',
+      '/punya-passport-medallion.jpg'
     ],
-    featuredImage: 'https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?q=80&w=1200&auto=format&fit=crop',
+    featuredImage: '/salahkareshwar-shivling.jpg',
     inStock: true,
     stockQuantity: 108,
     isActive: true,
     isFeatured: true,
     displayOrder: 1,
     prasadIncludes: [
-      'Consecrated Narmadeshwar Shivling with Brass Yoni Peeth',
-      'Sanctum Bhasma & Holy Gangajal vial from Varanasi',
+      'Consecrated Salahkareshwar Mahadev Shivling with Solid Brass Yoni Peeth',
+      'Sanctum Bhasma & Holy Gangajal vial',
       '108-bead Sacred Panchmukhi Rudraksha Mala',
       'Silver-plated Consecrated Bilva Leaf',
       'Blessed Raksha Sutra Thread',
@@ -43,44 +43,14 @@ export const FALLBACK_PRODUCTS: Product[] = [
     ritualDetails: {
       duration: '2.5 Hours',
       priestsCount: 2,
-      sanctum: 'Temple Inner Sanctum & Yagyashala',
+      sanctum: 'Salahkareshwar Mahadev Tirth Sanctum & Yagyashala',
       samagriProvided: true
     },
     specifications: [
-      { key: 'Lingam Stone', value: 'Original Narmada River Natural Pebble' },
+      { key: 'Lingam Stone', value: 'Swayambhu Sanctified Stone (Salahkareshwar)' },
       { key: 'Base (Yoni Peeth)', value: 'Pure Solid Brass with Engraved Tridents' },
       { key: 'Vedic Samhita', value: 'Rigvedic Rudra Sukta & Namakam-Chamakam' },
       { key: 'Fulfillment', value: 'Puja Video Recording + Sanctified Prasad Box' }
-    ]
-  },
-  {
-    _id: 'prod_fallback_2',
-    title: 'Maha Rudrabhishek & 108 Bilva Archana',
-    slug: 'rudrabhishek-puja',
-    category: 'Puja',
-    subtitle: 'Elaborate Rudra Chanting for Family Health, Peace, and Removal of Graha Dosha',
-    price: 2100,
-    originalPrice: 3100,
-    shortDescription: 'Dedicated Rudrabhishek Seva performed by two Vedic scholars chanting Sri Rudram with fresh cow milk, honey, sugarcane juice, and 108 fresh bilva leaves.',
-    description: 'A powerful spiritual recitation invoking the 11 forms of Lord Shiva for relief from ailments, ancestral peace, and spiritual illumination.',
-    images: [
-      'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop'
-    ],
-    featuredImage: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop',
-    inStock: true,
-    stockQuantity: 500,
-    isActive: true,
-    isFeatured: true,
-    displayOrder: 2,
-    prasadIncludes: [
-      'Rudrabhishek Sacred Bhasma',
-      'Sanctified Dry Fruit Prasad Box',
-      'Blessed Raksha Sutra'
-    ],
-    ritualsIncluded: [
-      'Sri Rudram Recitation',
-      'Panchamrit Snan',
-      'Bilva Patra Samarpana'
     ]
   }
 ];
@@ -89,7 +59,7 @@ export const FALLBACK_BANNERS: Banner[] = [
   {
     _id: 'banner_fallback_1',
     title: 'Maha Shivling Sthapana & Vedic Abhishek',
-    subtitle: 'Invite Divine Auspiciousness, Peace & Prosperity into your home with consecrated Narmadeshwar Shivling',
+    subtitle: 'Invite Divine Auspiciousness, Peace & Prosperity into your home with consecrated Salahkareshwar Shivling',
     imageUrl: 'https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?q=80&w=1600&auto=format&fit=crop',
     ctaText: 'Book Shivling Seva',
     ctaLink: '#shivling-section',

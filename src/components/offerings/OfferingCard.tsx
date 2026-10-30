@@ -1,115 +1,123 @@
 import React from 'react';
 import { ProductOffering } from '../../types/api';
-import { ShieldCheck, Gift, Clock, Sparkles } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 interface OfferingCardProps {
   offering: ProductOffering;
-  onSelect: (offering: ProductOffering) => void;
+  onSelect?: (offering: ProductOffering) => void;
   onQuickBook: (offering: ProductOffering) => void;
 }
 
 export const OfferingCard: React.FC<OfferingCardProps> = ({ offering, onSelect, onQuickBook }) => {
-  const image = offering.featuredImage || offering.images?.[0] || 'https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?q=80&w=600&auto=format&fit=crop';
+  const handleCardClick = () => {
+    if (onSelect) onSelect(offering);
+  };
+  // Extract or synthesize specifications for the 3 sacred bullets
+  const stoneSpec = offering.specifications?.find((s) => s.key.toLowerCase().includes('stone') || s.key.toLowerCase().includes('lingam'))?.value ||
+    '3.5" – 4.0" SACRED SWAYAMBHU SHIVLING STONE';
+
+  const baseSpec = offering.specifications?.find((s) => s.key.toLowerCase().includes('base') || s.key.toLowerCase().includes('peeth'))?.value ||
+    (offering.prasadIncludes && offering.prasadIncludes[0]) ||
+    'SOLID HEAVY BRASS BASE (1.2 KG) WITH TRISHUL ENGRAVING';
+
+  const priestCount = offering.ritualDetails?.priestsCount || 2;
+  const priestSpec = `${priestCount} CERTIFIED RIGVEDIC PRIESTS`;
+
+  const badgeText = offering.isFeatured
+    ? 'MOST POPULAR DEVOTEE CHOICE'
+    : (offering.category ? `${offering.category.toUpperCase()} SEVA` : 'MOST POPULAR DEVOTEE CHOICE');
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gold-500/30 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group hover:-translate-y-1">
-      {/* Card Header Image */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-stone-900">
-        <img
-          src={image}
-          alt={offering.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+    <div 
+      onClick={handleCardClick}
+      className="relative bg-[#FAF4EB] rounded-3xl p-7 sm:p-8 border-2 border-[#D4AF37] shadow-xl flex flex-col justify-between max-w-sm sm:max-w-md w-full mx-auto transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] group cursor-pointer"
+    >
+      {/* 4 L-Shaped Golden Corner Brackets */}
+      <div className="absolute top-2.5 left-2.5 w-4 h-4 border-t-2 border-l-2 border-[#D4AF37] pointer-events-none" />
+      <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-[#D4AF37] pointer-events-none" />
+      <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-[#D4AF37] pointer-events-none" />
+      <div className="absolute bottom-2.5 right-2.5 w-4 h-4 border-b-2 border-r-2 border-[#D4AF37] pointer-events-none" />
 
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3">
-          <span className="px-2.5 py-1 rounded-full bg-stone-900/80 backdrop-blur-sm text-gold-400 text-[10px] font-serif font-bold uppercase tracking-wider border border-gold-500/40">
-            {offering.category || 'Vedic Seva'}
-          </span>
-        </div>
+      {/* Arched Top Maroon Badge */}
+      <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1 rounded-full bg-gradient-to-r from-[#6D071A] to-[#8B0000] text-[#FFE885] border border-[#D4AF37] shadow-md text-[10px] sm:text-[11px] font-serif font-black tracking-widest uppercase text-center whitespace-nowrap">
+        {badgeText}
+      </div>
 
-        {/* In Stock / Sanctum Tag */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[11px]">
-          <span className="flex items-center gap-1 text-gold-300 font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-gold-400" />
-            100% Vedic Vidhi
+      {/* Title Header */}
+      <div className="text-center mt-3 space-y-1">
+        <h3 className="font-serif font-black text-lg sm:text-xl text-[#1F1510] tracking-wide uppercase leading-tight group-hover:text-[#6D071A] transition-colors">
+          {offering.title}
+        </h3>
+        {offering.subtitle && (
+          <p className="text-xs font-serif font-bold text-[#C2410C]">
+            {offering.subtitle}
+          </p>
+        )}
+      </div>
+
+      {/* Sacred Dakshina Price Block */}
+      <div className="text-center my-3 space-y-1.5">
+        <div className="flex items-baseline justify-center gap-2">
+          <span className="text-4xl font-serif font-black text-[#6D071A]">
+            ₹{offering.price.toLocaleString('en-IN')}
           </span>
-          {offering.prasadIncludes && offering.prasadIncludes.length > 0 && (
-            <span className="flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
-              <Gift className="w-3 h-3 text-saffron-400" />
-              Prasad Included
+          {offering.originalPrice && (
+            <span className="text-sm line-through text-stone-400 font-serif">
+              ₹{offering.originalPrice.toLocaleString('en-IN')}
             </span>
           )}
         </div>
-      </div>
 
-      {/* Card Body */}
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-2">
-          <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 leading-snug group-hover:text-maroon-700 transition-colors">
-            {offering.title}
-          </h3>
-          {offering.subtitle && (
-            <p className="text-xs text-saffron-600 font-medium">
-              {offering.subtitle}
-            </p>
-          )}
-          <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-            {offering.shortDescription || offering.description}
-          </p>
-        </div>
-
-        {/* Ritual Duration & Priests Meta */}
-        {offering.ritualDetails && (
-          <div className="flex items-center gap-3 text-xs text-stone-500 pt-2 border-t border-stone-100">
-            {offering.ritualDetails.duration && (
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-saffron-500" />
-                {offering.ritualDetails.duration}
-              </span>
-            )}
-            {offering.ritualDetails.sanctum && (
-              <span className="truncate">• {offering.ritualDetails.sanctum}</span>
-            )}
-          </div>
-        )}
-
-        {/* Pricing and Action Buttons */}
-        <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-3">
-          <div>
-            <span className="text-[10px] text-stone-400 uppercase block font-semibold">Dakshina</span>
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl sm:text-2xl font-serif font-extrabold text-maroon-700">
-                ₹{offering.price.toLocaleString('en-IN')}
-              </span>
-              {offering.originalPrice && (
-                <span className="text-xs line-through text-stone-400">
-                  ₹{offering.originalPrice.toLocaleString('en-IN')}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => onSelect(offering)}
-              type="button"
-              className="px-3 py-2 rounded-lg border border-stone-300 hover:border-gold-500 text-stone-700 hover:text-stone-900 text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Learn More
-            </button>
-            <button
-              onClick={() => onQuickBook(offering)}
-              type="button"
-              className="px-4 py-2 rounded-lg bg-saffron-600 hover:bg-saffron-500 text-white font-serif text-xs font-bold shadow-sm transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-gold-300" />
-              <span>Book Seva</span>
-            </button>
-          </div>
+        {/* Full Prasad Delivery Guarantee Pill */}
+        <div className="inline-block px-3.5 py-1 rounded-full bg-[#F3E8D8] border border-[#E0D2C0] text-[#C2410C] text-[10px] sm:text-[11px] font-serif font-bold">
+          पूर्ण प्रसाद एवं स्पीड पोस्ट सम्मिलित
         </div>
       </div>
+
+      {/* Description in Upper Case Serif */}
+      <p className="text-[11px] sm:text-xs text-stone-600 font-serif leading-relaxed text-center uppercase tracking-wide px-1 line-clamp-3 mb-4">
+        {offering.shortDescription || offering.description}
+      </p>
+
+      {/* Divider */}
+      <div className="w-full h-px bg-[#D4AF37]/40 mb-4" />
+
+      {/* 3 Sacred Inclusion Bullets */}
+      <div className="space-y-2.5 text-[11px] sm:text-xs font-serif text-stone-800 uppercase tracking-wide mb-5">
+        <div className="flex items-start gap-2.5">
+          <div className="w-4 h-4 rounded-full border border-[#FF7722] text-[#FF7722] flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-black">
+            ✓
+          </div>
+          <span className="font-semibold leading-snug">
+            {stoneSpec}
+          </span>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <div className="w-4 h-4 rounded-full border border-[#D4AF37] text-[#D4AF37] flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-black">
+            ✓
+          </div>
+          <span className="font-semibold leading-snug">
+            {baseSpec}
+          </span>
+        </div>
+
+        <div className="flex items-start gap-2.5">
+          <Users className="w-4 h-4 text-stone-500 shrink-0 mt-0.5" />
+          <span className="font-semibold leading-snug">
+            {priestSpec}
+          </span>
+        </div>
+      </div>
+
+      {/* Full-Width Action Button */}
+      <button
+        type="button"
+        onClick={() => onQuickBook(offering)}
+        className="w-full py-3 sm:py-3.5 rounded-xl font-serif font-black text-xs sm:text-sm uppercase tracking-wider text-white bg-gradient-to-r from-[#C2410C] via-[#FF7722] to-[#C2410C] hover:from-[#EA580C] hover:to-[#EA580C] shadow-md hover:shadow-diya transition-all duration-300 border border-[#FFE885] cursor-pointer flex items-center justify-center gap-2"
+      >
+        <span>✓ SELECTED SACRED TIER</span>
+      </button>
     </div>
   );
 };

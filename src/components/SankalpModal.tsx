@@ -70,7 +70,7 @@ export const SankalpModal: React.FC<SankalpModalProps> = ({ product, onClose, on
         key: razorpayKey,
         amount: orderRes.amount,
         currency: orderRes.currency || 'INR',
-        name: 'Shree Somnath Sanctum Trust',
+        name: 'Salahkareshwar Mahadev Tirth (पुण्य पासपोर्ट)',
         description: `Seva: ${product.title}`,
         order_id: orderRes.razorpayOrderId || '',
         prefill: {

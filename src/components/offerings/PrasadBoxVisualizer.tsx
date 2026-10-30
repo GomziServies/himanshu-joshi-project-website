@@ -64,8 +64,8 @@ export const PrasadBoxVisualizer: React.FC<PrasadBoxVisualizerProps> = ({ isOpen
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             {[
               {
-                title: 'Consecrated Narmadeshwar Shivling',
-                desc: 'Hand-selected natural pebble with solid heavy base, secured in molded velvet cavity.'
+                title: 'Consecrated Salahkareshwar Mahadev Shivling',
+                desc: 'Hand-selected sacred Swayambhu stone with solid brass heavy base, secured in molded velvet cavity.'
               },
               {
                 title: 'Kashi Vishwanath Holy Gangajal (100ml)',

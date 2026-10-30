@@ -44,9 +44,9 @@ export async function initiateRazorpayCheckout(params: InitiateCheckoutParams): 
       key: orderData.key || 'rzp_test_placeholder',
       amount: orderData.amount, // in paise
       currency: orderData.currency || 'INR',
-      name: 'Shree Mahadev Temple Trust',
+      name: 'Salahkareshwar Mahadev Tirth (पुण्य पासपोर्ट)',
       description: `${offering.title} (Sankalp: ${request.customer.sankalpName || request.customer.name})`,
-      image: 'https://images.unsplash.com/photo-1609342122563-a43ac8917a3a?q=80&w=200&auto=format&fit=crop',
+      image: typeof window !== 'undefined' ? `${window.location.origin}/punya-passport-logo.jpg` : '/punya-passport-logo.jpg',
       order_id: orderData.razorpayOrderId,
       prefill: {
         name: request.customer.name,

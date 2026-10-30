@@ -3,15 +3,13 @@ import { ProductOffering, OfferingTier, DevoteeCustomer, VerifyPaymentResponse }
 import { fetchOfferings } from './services/offeringService';
 import { initiateRazorpayCheckout } from './services/checkoutService';
 import { SEED_OFFERINGS } from './data/seedOfferings';
-import { TopBar } from './components/layout/TopBar';
 import { Navbar } from './components/layout/Navbar';
-import { HeroBanner } from './components/layout/HeroBanner';
 import { Footer } from './components/layout/Footer';
 import { ShivlingSthapanaShowcase } from './components/offerings/ShivlingSthapanaShowcase';
-import { OfferingsCatalog } from './components/offerings/OfferingsCatalog';
 import { PrasadBoxVisualizer } from './components/offerings/PrasadBoxVisualizer';
 import { SankalpDrawer } from './components/sankalp/SankalpDrawer';
 import { SacredReceiptModal } from './components/receipt/SacredReceiptModal';
+import { MandirShlokaSection } from './components/offerings/MandirShlokaSection';
 import { ShieldCheck, HeartHandshake, Sparkles } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -44,17 +42,6 @@ export const App: React.FC = () => {
   const handleOpenBooking = (offering?: ProductOffering, tier?: OfferingTier) => {
     setSelectedOffering(offering || flagshipOffering);
     setSelectedTier(tier);
-  };
-
-  const handleBannerCta = (link?: string) => {
-    if (link && link.startsWith('#')) {
-      const el = document.querySelector(link);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-    }
-    handleOpenBooking(flagshipOffering);
   };
 
   const handleSankalpSubmit = async (customer: DevoteeCustomer) => {
@@ -105,17 +92,11 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-cream-50 text-stone-900 selection:bg-saffron-500 selection:text-white">
-      {/* Top Auspicious Announcement & Panchang Bar */}
-      <TopBar />
-
       {/* Main Temple Header / Navbar */}
       <Navbar onSelectOfferingClick={() => handleOpenBooking(flagshipOffering)} />
 
       {/* Main Body */}
       <main className="flex-1">
-        {/* Dynamic Hero Banner Carousel */}
-        <HeroBanner onCtaClick={handleBannerCta} />
-
         {/* Flagship Shivling Sthapana Consecration Showcase */}
         {flagshipOffering && (
           <ShivlingSthapanaShowcase
@@ -125,52 +106,66 @@ export const App: React.FC = () => {
           />
         )}
 
+        {/* Sacred Vedic Shlokas & Narmada Lingam Significance */}
+        <MandirShlokaSection />
+
         {/* Vedic Vidhi & Sanctum Process */}
-        <section id="vedic-vidhi" className="py-20 bg-[#FDF8EC] border-b border-gold-500/30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="vedic-vidhi" className="py-24 bg-[#F7F1E5] border-b-2 border-[#D4AF37]/40 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-              <span className="text-xs font-serif uppercase tracking-widest text-saffron-600 font-bold">
-                Authentic Vedic Agamic Process
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-maroon-700">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#6D071A] to-[#8B0000] border border-[#D4AF37] text-[#FFE885] text-xs font-serif font-black uppercase tracking-widest shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-[#FF7722]" />
+                <span>॥ षोडशोपचार वैदिक प्रतिष्ठा क्रम ॥</span>
+              </div>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-black text-[#6D071A] tracking-wide">
                 How Your Consecration Seva is Performed
               </h2>
-              <p className="text-stone-600 text-sm">
-                From the sanctified banks of the holy Narmada River to your sacred home mandir, every step is performed with devotion and Vedic precision.
+              <p className="text-stone-700 text-sm sm:text-base font-serif leading-relaxed">
+                From the sanctified altar of Sri Salahkareshwar Mahadev Tirth to your home mandir, every step is performed with devotion, Vedic purity, and Agamic precision.
               </p>
+              <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-2" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
                 {
-                  step: '01',
+                  step: '०१',
+                  sub: 'Step 01',
                   title: 'Gotra Sankalp Invocation',
-                  desc: 'Your name, Gotra, and sacred intentions are chanted by Vedic priests before commencing the Puja.'
+                  desc: 'Your name, Gotra, and sacred intentions are explicitly chanted by initiated Vedic priests at the sacred sanctum altar.'
                 },
                 {
-                  step: '02',
-                  title: 'Swayambhu Lingam Consecration',
-                  desc: 'The naturally rounded Narmada stone undergoes sacred Pran Pratishtha with Panchamrit Snan.'
+                  step: '०२',
+                  sub: 'Step 02',
+                  title: 'Swayambhu Consecration',
+                  desc: 'The sacred Swayambhu Shivling undergoes Agamic Pran Pratishtha with Panchamrit Snan and sanctified Gangajal.'
                 },
                 {
-                  step: '03',
+                  step: '०३',
+                  sub: 'Step 03',
                   title: '108 Bilva Patra Archana',
-                  desc: 'Priests chant Sri Rudram Namakam-Chamakam while offering fresh Bilva leaves onto the Shiva Lingam.'
+                  desc: 'Priests chant Sri Rudram Namakam-Chamakam while offering fresh 108 consecrated Bilva leaves onto the Shiva Lingam.'
                 },
                 {
-                  step: '04',
+                  step: '०४',
+                  sub: 'Step 04',
                   title: 'Sanctified Prasad Delivery',
-                  desc: 'The energized Shivling, Gangajal, and holy Bhasma are packed in a consecrated box and dispatched to you.'
+                  desc: 'The energized Shivling, Gangajal, and holy Bhasma are packed in a velvet consecrated box and dispatched via Speed Post.'
                 }
               ].map((item, idx) => (
-                <div key={idx} className="bg-white rounded-xl p-6 border border-gold-500/30 shadow-sm relative">
-                  <span className="font-serif text-4xl font-black text-gold-500/25 block mb-2">
-                    {item.step}
-                  </span>
-                  <h3 className="font-serif text-base font-bold text-stone-900 mb-2">
+                <div key={idx} className="bg-white rounded-2xl p-7 border-2 border-[#D4AF37]/40 shadow-lg relative group hover:border-[#D4AF37] hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-serif text-3xl font-black text-[#C2410C]">
+                      {item.step}
+                    </span>
+                    <span className="text-[10px] font-serif uppercase tracking-widest px-2 py-0.5 rounded bg-[#FAF4EB] text-stone-600 font-bold border border-[#D4AF37]/30">
+                      {item.sub}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-lg font-black text-[#1F1510] mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed">
+                  <p className="text-xs text-stone-600 font-serif leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -178,12 +173,6 @@ export const App: React.FC = () => {
             </div>
           </div>
         </section>
-
-        {/* Dynamic Offerings Catalog */}
-        <OfferingsCatalog
-          products={offerings}
-          onSelectProduct={(item) => handleOpenBooking(item)}
-        />
 
         {/* Trust & Guarantee Banner */}
         <section id="trust-guarantee" className="py-16 bg-stone-950 text-white">
@@ -195,10 +184,10 @@ export const App: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-serif font-bold text-sm text-gold-300 uppercase tracking-wider">
-                    Authentic Swayambhu Stone
+                    Swayambhu Sanctum Shivling
                   </h4>
                   <p className="text-xs text-stone-300 mt-1">
-                    Every Narmadeshwar Shivling is personally sourced from the sacred Narmada River bed.
+                    Every Shivling is energized and consecrated directly at Sri Salahkareshwar Mahadev Tirth.
                   </p>
                 </div>
               </div>

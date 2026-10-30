@@ -4,59 +4,158 @@
 
 @layer base {
   body {
-    background-color: #FDFBF7;
-    color: #1A1412;
+    background-color: #FAF6EF;
+    color: #1F1510;
     overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(224, 90, 23, 0.04) 0%, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(139, 0, 0, 0.04) 0%, transparent 50%);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cinzel', Georgia, serif;
+    font-family: 'Cinzel', 'Marcellus', Georgia, serif;
     letter-spacing: 0.025em;
   }
 }
 
 @layer utilities {
-  /* Sacred Golden Border Motifs */
+  .font-cinzel-dec {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  }
+
+  .font-rozha {
+    font-family: 'Rozha One', 'Cinzel', serif;
+  }
+
+  .font-marcellus {
+    font-family: 'Marcellus', serif;
+  }
+
+  .font-yatra {
+    font-family: 'Yatra One', 'Tiro Devanagari Sanskrit', serif;
+  }
+
+  /* Authentic Temple Arch Shape */
+  .temple-arch-top {
+    border-top-left-radius: 9999px;
+    border-top-right-radius: 9999px;
+  }
+
+  /* Sacred Double Gold Border (Bhojpatra manuscript style) */
+  .border-temple-double {
+    border: 3px double rgba(212, 175, 55, 0.7);
+    box-shadow: 
+      inset 0 0 12px rgba(212, 175, 55, 0.12),
+      0 4px 20px rgba(109, 7, 26, 0.08);
+  }
+
   .border-gold-ornate {
-    border: 1px solid rgba(212, 175, 55, 0.4);
-    box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1), 0 0 12px rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    box-shadow: 
+      inset 0 0 14px rgba(212, 175, 55, 0.15), 
+      0 0 18px rgba(212, 175, 55, 0.2);
   }
 
-  .gold-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.6) 50%, transparent 100%);
+  /* Shimmering Metallic Gold Foil */
+  .gold-foil {
+    background: linear-gradient(135deg, #FFE885 0%, #D4AF37 35%, #AA7C11 70%, #F5D77F 100%);
   }
 
-  .saffron-gradient {
-    background: linear-gradient(135deg, #FF7722 0%, #EA580C 100%);
-  }
-
-  .maroon-gradient {
-    background: linear-gradient(135deg, #8B0000 0%, #4A0707 100%);
-  }
-
-  .gold-gradient-text {
-    background: linear-gradient(135deg, #DFBE47 0%, #D4AF37 50%, #926D1D 100%);
+  .gold-foil-text {
+    background: linear-gradient(135deg, #FFF0A0 0%, #D4AF37 35%, #F0CE57 70%, #A47712 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .stone-gradient {
-    background: linear-gradient(180deg, #1A1412 0%, #0F0B0A 100%);
+  .saffron-gold-text {
+    background: linear-gradient(135deg, #FF8A00 0%, #D4AF37 50%, #B84700 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
+
+  /* Deep Royal Sanctum Gradients */
+  .sanctum-gradient {
+    background: linear-gradient(180deg, #180D09 0%, #2A0E13 50%, #150906 100%);
+  }
+
+  .sanctum-maroon-gradient {
+    background: linear-gradient(145deg, #6D071A 0%, #46040F 60%, #280208 100%);
+  }
+
+  .saffron-gradient {
+    background: linear-gradient(135deg, #FF6600 0%, #E04D01 50%, #C23900 100%);
+  }
+
+  .brass-gradient {
+    background: linear-gradient(135deg, #ECD586 0%, #C89F38 45%, #926E17 85%, #E4C873 100%);
+  }
+
+  /* Diya Ambient Glow */
+  .diya-glow {
+    box-shadow: 0 0 25px rgba(255, 119, 34, 0.35), 0 0 50px rgba(212, 175, 55, 0.2);
+  }
+
+  .diya-glow-lg {
+    box-shadow: 0 0 40px rgba(255, 119, 34, 0.5), 0 0 80px rgba(212, 175, 55, 0.3);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), 0 0 50px rgba(212, 175, 55, 0.15);
+  }
+
+  /* Sacred Divider */
+  .gold-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #D4AF37 50%, transparent 100%);
+  }
+
+  /* Vedic Floral Garland / Toran Top Border Accent */
+  .toran-accent {
+    background-image: radial-gradient(circle, #D4AF37 1.5px, transparent 1.5px), radial-gradient(circle, #E05A17 1.5px, transparent 1.5px);
+    background-size: 16px 16px;
+    background-position: 0 0, 8px 8px;
+  }
+}
+
+/* Diya Flicker Animation */
+@keyframes diyaFlicker {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 0 6px #FF8A00);
+  }
+  50% {
+    transform: scale(1.08) translateY(-1px);
+    filter: drop-shadow(0 0 12px #D4AF37);
+  }
+}
+
+.animate-diya {
+  animation: diyaFlicker 2.5s ease-in-out infinite;
+}
+
+/* Subtle Shimmer */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: goldShimmer 4s infinite linear;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: #F2ECE0;
+  background: #23120C;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: linear-gradient(180deg, #D4AF37 0%, #926E17 100%);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B88E23;
+  background: #FFE27A;
 }
