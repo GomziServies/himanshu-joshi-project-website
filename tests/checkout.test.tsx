@@ -1,190 +1,193 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { initiateRazorpayCheckout } from '../src/services/checkoutService';
-import { SEED_OFFERINGS } from '../src/data/seedOfferings';
-import { DevoteeCustomer } from '../src/types/api';
+import { CreateOrderRequest } from '../src/types/api';
 import { setupRazorpayMock } from '../src/test/setup';
 
-describe('Razorpay Checkout Lifecycle & Payment Verification', () => {
-  const dummyOffering = SEED_OFFERINGS[0];
-  const dummyCustomer: DevoteeCustomer = {
+const offering = { _id: 'product_1', title: 'Salahkareshwar Mahadev Shivling' };
+
+const request: CreateOrderRequest = {
+  customer: {
     name: 'Devotee Sharma',
     email: 'sharma@example.com',
     phone: '+919876543210',
-    sankalpName: 'Devotee Sharma & Family',
+    sankalpName: 'Devotee Sharma',
     gotra: 'Kashyapa',
-    address: {
-      street: '12 Temple St',
-      city: 'Varanasi',
-      state: 'Uttar Pradesh',
-      postalCode: '221001',
-      country: 'India'
-    }
-  };
+    address: { street: '12 Temple St', city: 'Vadodara', state: 'Gujarat', postalCode: '390012', country: 'India' }
+  },
+  items: [{ productId: offering._id, quantity: 1 }]
+};
 
+const orderResponse = {
+  success: true,
+  orderId: 'mongo_order_999',
+  orderNumber: 'ORD-20261030-ABC123',
+  razorpayOrderId: 'order_rzp_999',
+  amount: 50100,
+  currency: 'INR',
+  key: 'rzp_test_key123',
+  isDemo: false
+};
+
+const verifyResponse = {
+  success: true,
+  message: 'Payment verified and receipt dispatched successfully',
+  orderId: 'mongo_order_999',
+  orderNumber: 'ORD-20261030-ABC123',
+  receiptNumber: 'RCPT-20261030-ABC123',
+  amount: 501
+};
+
+function mockApi(order: object = orderResponse) {
+  const fetchMock = vi.fn().mockImplementation(async (url: string) => {
+    if (url.includes('/orders/create-order')) {
+      return { ok: true, status: 201, headers: { get: () => 'application/json' }, json: async () => order };
+    }
+    if (url.includes('/orders/verify-payment')) {
+      return { ok: true, status: 200, headers: { get: () => 'application/json' }, json: async () => verifyResponse };
+    }
+    return { ok: false, status: 404, headers: { get: () => 'application/json' }, json: async () => ({}) };
+  });
+  globalThis.fetch = fetchMock;
+  return fetchMock;
+}
+
+function verifyCallBody(fetchMock: ReturnType<typeof vi.fn>) {
+  const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/orders/verify-payment'));
+  return call ? JSON.parse(call[1].body) : null;
+}
+
+describe('Checkout', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     setupRazorpayMock();
   });
 
-  it('calls /orders/create-order, instantiates Razorpay with #8B0000 theme, and verifies payment on success', async () => {
-    const mockOrderResponse = {
-      success: true,
-      orderId: 'mongo_order_999',
-      orderNumber: 'ORD-20261029-999',
-      razorpayOrderId: 'order_rzp_999',
-      amount: 510000,
-      currency: 'INR',
-      key: 'rzp_test_key123'
-    };
-
-    const mockVerifyResponse = {
-      success: true,
-      message: 'Payment verified and receipt dispatched successfully',
-      orderId: 'mongo_order_999',
-      orderNumber: 'ORD-20261029-999',
-      receiptNumber: 'RCPT-20261029-999',
-      amount: 5100
-    };
-
-    globalThis.fetch = vi.fn().mockImplementation(async (url: string) => {
-      if (url.includes('/orders/create-order')) {
-        return {
-          ok: true,
-          status: 201,
-          headers: { get: () => 'application/json' },
-          json: async () => mockOrderResponse
-        };
-      }
-      if (url.includes('/orders/verify-payment')) {
-        return {
-          ok: true,
-          status: 200,
-          headers: { get: () => 'application/json' },
-          json: async () => mockVerifyResponse
-        };
-      }
-      return { ok: false, status: 404 };
-    });
-
+  it('opens Razorpay with the server amount and verifies the payment on success', async () => {
+    const fetchMock = mockApi();
     const onSuccess = vi.fn();
     const onError = vi.fn();
+    const confirmTestPayment = vi.fn();
 
-    await initiateRazorpayCheckout({
-      request: {
-        customer: {
-          name: dummyCustomer.name,
-          email: dummyCustomer.email,
-          phone: dummyCustomer.phone,
-          sankalpName: dummyCustomer.sankalpName,
-          gotra: dummyCustomer.gotra,
-          address: dummyCustomer.address
-        },
-        items: [{ productId: dummyOffering._id, quantity: 1 }]
-      },
-      offering: dummyOffering,
-      onSuccess,
-      onError
-    });
+    await initiateRazorpayCheckout({ request, description: offering.title, confirmTestPayment, onSuccess, onError });
 
-    // Assert Razorpay instance opened
-    const rzpInstance = (window.Razorpay as any).mock?.instances?.[0];
-    expect(rzpInstance).toBeDefined();
-    expect(rzpInstance.open).toHaveBeenCalled();
-    expect(rzpInstance.options.theme.color).toBe('#8B0000');
-    expect(rzpInstance.options.order_id).toBe('order_rzp_999');
+    const rzp = (window.Razorpay as any).mock.instances[0];
+    expect(rzp.open).toHaveBeenCalled();
+    expect(rzp.options.amount).toBe(50100);
+    expect(rzp.options.order_id).toBe('order_rzp_999');
+    expect(confirmTestPayment).not.toHaveBeenCalled();
 
-    // Simulate Razorpay payment success callback
-    await rzpInstance.options.handler({
+    await rzp.options.handler({
       razorpay_order_id: 'order_rzp_999',
       razorpay_payment_id: 'pay_test_123',
       razorpay_signature: 'valid_sig_hex'
     });
 
-    // Assert verify-payment was dispatched and onSuccess received receipt
-    expect(onSuccess).toHaveBeenCalledWith(mockVerifyResponse);
+    expect(verifyCallBody(fetchMock).razorpay_signature).toBe('valid_sig_hex');
+    expect(onSuccess).toHaveBeenCalledWith(verifyResponse);
     expect(onError).not.toHaveBeenCalled();
   });
 
-  it('handles server rejection on order creation gracefully', async () => {
-    globalThis.fetch = vi.fn().mockImplementation(async (url: string) => {
-      if (url.includes('/orders/create-order')) {
-        return {
-          ok: false,
-          status: 400,
-          headers: { get: () => 'application/json' },
-          json: async () => ({ success: false, message: 'Invalid product selection' })
-        };
-      }
-      return { ok: false, status: 404 };
+  it('asks for confirmation in demo mode and never opens Razorpay', async () => {
+    const fetchMock = mockApi({ ...orderResponse, isDemo: true });
+    const onSuccess = vi.fn();
+
+    await initiateRazorpayCheckout({
+      request,
+      description: offering.title,
+      confirmTestPayment: async () => true,
+      onSuccess,
+      onError: vi.fn()
     });
 
+    expect((window.Razorpay as any).mock.instances).toHaveLength(0);
+    expect(verifyCallBody(fetchMock).razorpay_signature).toBe('demo_mock_signature');
+    expect(onSuccess).toHaveBeenCalledWith(verifyResponse);
+  });
+
+  it('does not verify anything when a demo payment is cancelled', async () => {
+    const fetchMock = mockApi({ ...orderResponse, isDemo: true });
+    const onSuccess = vi.fn();
+    const onDismiss = vi.fn();
+
+    await initiateRazorpayCheckout({
+      request,
+      description: offering.title,
+      confirmTestPayment: async () => false,
+      onSuccess,
+      onError: vi.fn(),
+      onDismiss
+    });
+
+    expect(verifyCallBody(fetchMock)).toBeNull();
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(onDismiss).toHaveBeenCalled();
+  });
+
+  it('reports a server rejection when creating the order', async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ success: false, message: 'Offering is currently not available' })
+    });
     const onSuccess = vi.fn();
     const onError = vi.fn();
 
     await initiateRazorpayCheckout({
-      request: {
-        customer: {
-          name: dummyCustomer.name,
-          email: dummyCustomer.email,
-          phone: dummyCustomer.phone,
-          sankalpName: dummyCustomer.sankalpName,
-          gotra: dummyCustomer.gotra,
-          address: dummyCustomer.address
-        },
-        items: [{ productId: 'invalid_id', quantity: 1 }]
-      },
-      offering: dummyOffering,
+      request,
+      description: offering.title,
+      confirmTestPayment: vi.fn(),
       onSuccess,
       onError
     });
 
-    expect(onError).toHaveBeenCalled();
+    expect(onError.mock.calls[0][0].message).toBe('Offering is currently not available');
     expect(onSuccess).not.toHaveBeenCalled();
   });
 
-  it('triggers onDismiss callback when devotee dismisses modal', async () => {
-    const mockOrderResponse = {
-      success: true,
-      orderId: 'mongo_order_999',
-      orderNumber: 'ORD-20261029-999',
-      razorpayOrderId: 'order_rzp_999',
-      amount: 510000,
-      currency: 'INR',
-      key: 'rzp_test_key123'
-    };
+  it('gives the payment ID when verification fails after a payment', async () => {
+    mockApi();
+    const onError = vi.fn();
 
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 201,
-      headers: { get: () => 'application/json' },
-      json: async () => mockOrderResponse
+    await initiateRazorpayCheckout({
+      request,
+      description: offering.title,
+      confirmTestPayment: vi.fn(),
+      onSuccess: vi.fn(),
+      onError
     });
 
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ success: false, message: 'Invalid payment signature' })
+    });
+
+    const rzp = (window.Razorpay as any).mock.instances[0];
+    await rzp.options.handler({
+      razorpay_order_id: 'order_rzp_999',
+      razorpay_payment_id: 'pay_test_123',
+      razorpay_signature: 'bad'
+    });
+
+    expect(onError.mock.calls[0][0].message).toContain('pay_test_123');
+  });
+
+  it('calls onDismiss when the Razorpay modal is closed', async () => {
+    mockApi();
     const onDismiss = vi.fn();
 
     await initiateRazorpayCheckout({
-      request: {
-        customer: {
-          name: dummyCustomer.name,
-          email: dummyCustomer.email,
-          phone: dummyCustomer.phone,
-          sankalpName: dummyCustomer.sankalpName,
-          gotra: dummyCustomer.gotra,
-          address: dummyCustomer.address
-        },
-        items: [{ productId: dummyOffering._id, quantity: 1 }]
-      },
-      offering: dummyOffering,
+      request,
+      description: offering.title,
+      confirmTestPayment: vi.fn(),
       onSuccess: vi.fn(),
       onError: vi.fn(),
       onDismiss
     });
 
-    const rzpInstance = (window.Razorpay as any).mock?.instances?.[0];
-    expect(rzpInstance).toBeDefined();
-
-    // Trigger modal dismissal
-    rzpInstance.options.modal.ondismiss();
+    (window.Razorpay as any).mock.instances[0].options.modal.ondismiss();
     expect(onDismiss).toHaveBeenCalled();
   });
 });

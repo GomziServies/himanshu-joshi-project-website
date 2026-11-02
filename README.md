@@ -1,21 +1,18 @@
-# Shree Somnath Sanctum — Customer Temple Storefront
-**Directory:** `C:\himanshu-joshi-project-website`
+# Salahkareshwar Mahadev Tirth: Website
 
-A production-grade, sacred Vedic temple customer storefront built with **React 18**, **Vite**, **TypeScript**, and **Tailwind CSS**.
+Temple-themed site for offering a Shivling (₹501), built with React 18, Vite, TypeScript and Tailwind CSS.
 
-## Features
-- **Auspicious Vedic Temple Theme:** Saffron (`#E05A17`), Divine Gold (`#D4AF37`), Sanctum Maroon (`#6D071A`), and sacred ivory palettes.
-- **Sole Consecration Showcase (Shivling Sthapana):** Highlights the authentic Narmada Swayambhu Shivling with brass Yoni Peeth, Vedic Pran Pratishtha, Panchamrit Abhishek, and full Prasad inclusions.
-- **Devotee Vedic Sankalp Patra:** Collects devotee (Yajman) name, family Gotra, Nakshatra, ceremony date, prayer intentions, and delivery address for the sanctified Prasad box.
-- **Razorpay Checkout Integration:** Direct modal payment processing with cryptographic HMAC-SHA256 signature verification on backend.
-- **Dynamic Banners & Offerings:** Dynamically synchronizes with the Backend API (`/api/banners`, `/api/products`) with zero-downtime offline fallbacks.
-- **Instant Consecration Confirmation:** Itemized printable receipt modal and notification of automated email dispatch.
+Products and prices come only from the API, so whatever is set in the admin panel is what the site shows and charges. If the API cannot be reached, the page offers a retry instead of showing a price.
+
+Payments go through Razorpay. While the API runs in demo mode (`DEMO_PAYMENT_ENABLED=true`) a clearly labelled test payment replaces Razorpay and no money moves.
 
 ## Getting Started
 ```bash
 npm install
-npm run dev     # Starts development server on http://localhost:5173
-npm run build   # Production bundle compilation (tsc && vite build)
-npm test        # Runs Vitest automated test suite
+cp .env.example .env
+npm run dev     # http://localhost:5173
+npm run build
+npm test
 ```
 
+The API must be running.

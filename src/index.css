@@ -3,159 +3,128 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    background-color: #FAF6EF;
-    color: #1F1510;
-    overflow-x: hidden;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(224, 90, 23, 0.04) 0%, transparent 60%),
-      radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 0% 100%, rgba(139, 0, 0, 0.04) 0%, transparent 50%);
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cinzel', 'Marcellus', Georgia, serif;
-    letter-spacing: 0.025em;
+  body {
+    @apply bg-ivory-50 font-sans text-ink antialiased;
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid #EE8F12;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Primary action: lit like a lamp, dark text keeps it readable */
+  .btn-offer {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3 font-sans text-lg font-semibold text-sanctum transition duration-200;
+    background: linear-gradient(180deg, #FBC252 0%, #EE8F12 100%);
+    box-shadow: 0 0 0 1px rgba(255, 226, 150, 0.6) inset, 0 8px 28px rgba(238, 143, 18, 0.35);
+  }
+
+  .btn-offer:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px rgba(255, 226, 150, 0.8) inset, 0 12px 36px rgba(238, 143, 18, 0.55);
+  }
+
+  .btn-offer:disabled {
+    @apply cursor-not-allowed opacity-60;
+    transform: none;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-ivory-200 bg-white px-3 py-2.5 text-base text-ink placeholder:text-ink-muted/60 focus:border-marigold-500 focus:outline-none focus:ring-2 focus:ring-marigold-500/25;
+  }
+
+  .field-label {
+    @apply mb-1 block text-sm font-semibold text-ink;
+  }
+
+  .field-error {
+    @apply mt-1 text-sm font-medium text-sindoor-600;
   }
 }
 
 @layer utilities {
-  .font-cinzel-dec {
-    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  /* Carved stone screen (jaali) laid over dark sections */
+  .jaali {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23D9B45E' stroke-opacity='.07' stroke-width='1.2'%3E%3Cpath d='M28 4c6 8 6 16 0 24-6-8-6-16 0-24zM28 52c6-8 6-16 0-24-6 8-6 16 0 24zM4 28c8-6 16-6 24 0-8 6-16 6-24 0zM52 28c-8-6-16-6-24 0 8 6 16 6 24 0z'/%3E%3Ccircle cx='28' cy='28' r='3'/%3E%3C/g%3E%3C/svg%3E");
   }
 
-  .font-rozha {
-    font-family: 'Rozha One', 'Cinzel', serif;
-  }
-
-  .font-marcellus {
-    font-family: 'Marcellus', serif;
-  }
-
-  .font-yatra {
-    font-family: 'Yatra One', 'Tiro Devanagari Sanskrit', serif;
-  }
-
-  /* Authentic Temple Arch Shape */
-  .temple-arch-top {
-    border-top-left-radius: 9999px;
-    border-top-right-radius: 9999px;
-  }
-
-  /* Sacred Double Gold Border (Bhojpatra manuscript style) */
-  .border-temple-double {
-    border: 3px double rgba(212, 175, 55, 0.7);
-    box-shadow: 
-      inset 0 0 12px rgba(212, 175, 55, 0.12),
-      0 4px 20px rgba(109, 7, 26, 0.08);
-  }
-
-  .border-gold-ornate {
-    border: 1px solid rgba(212, 175, 55, 0.45);
-    box-shadow: 
-      inset 0 0 14px rgba(212, 175, 55, 0.15), 
-      0 0 18px rgba(212, 175, 55, 0.2);
-  }
-
-  /* Shimmering Metallic Gold Foil */
-  .gold-foil {
-    background: linear-gradient(135deg, #FFE885 0%, #D4AF37 35%, #AA7C11 70%, #F5D77F 100%);
-  }
-
-  .gold-foil-text {
-    background: linear-gradient(135deg, #FFF0A0 0%, #D4AF37 35%, #F0CE57 70%, #A47712 100%);
+  .brass-text {
+    background: linear-gradient(180deg, #F8E7B4 0%, #D9B45E 60%, #A97F2D 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .saffron-gold-text {
-    background: linear-gradient(135deg, #FF8A00 0%, #D4AF37 50%, #B84700 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  /* Deep Royal Sanctum Gradients */
-  .sanctum-gradient {
-    background: linear-gradient(180deg, #180D09 0%, #2A0E13 50%, #150906 100%);
-  }
-
-  .sanctum-maroon-gradient {
-    background: linear-gradient(145deg, #6D071A 0%, #46040F 60%, #280208 100%);
-  }
-
-  .saffron-gradient {
-    background: linear-gradient(135deg, #FF6600 0%, #E04D01 50%, #C23900 100%);
-  }
-
-  .brass-gradient {
-    background: linear-gradient(135deg, #ECD586 0%, #C89F38 45%, #926E17 85%, #E4C873 100%);
-  }
-
-  /* Diya Ambient Glow */
-  .diya-glow {
-    box-shadow: 0 0 25px rgba(255, 119, 34, 0.35), 0 0 50px rgba(212, 175, 55, 0.2);
-  }
-
-  .diya-glow-lg {
-    box-shadow: 0 0 40px rgba(255, 119, 34, 0.5), 0 0 80px rgba(212, 175, 55, 0.3);
-  }
-
-  .gold-glow {
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), 0 0 50px rgba(212, 175, 55, 0.15);
-  }
-
-  /* Sacred Divider */
-  .gold-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, #D4AF37 50%, transparent 100%);
-  }
-
-  /* Vedic Floral Garland / Toran Top Border Accent */
-  .toran-accent {
-    background-image: radial-gradient(circle, #D4AF37 1.5px, transparent 1.5px), radial-gradient(circle, #E05A17 1.5px, transparent 1.5px);
-    background-size: 16px 16px;
-    background-position: 0 0, 8px 8px;
+    background-clip: text;
+    color: transparent;
   }
 }
 
-/* Diya Flicker Animation */
-@keyframes diyaFlicker {
-  0%, 100% {
-    transform: scale(1) translateY(0);
-    filter: drop-shadow(0 0 6px #FF8A00);
+/* Lamp flame */
+@keyframes flameDance {
+  0%, 100% { transform: scale(1, 1) rotate(-1deg); opacity: 1; }
+  30% { transform: scale(0.94, 1.08) rotate(2deg); opacity: 0.92; }
+  60% { transform: scale(1.04, 0.95) rotate(-2deg); opacity: 1; }
+}
+
+.flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flameDance 2.4s ease-in-out infinite;
+}
+
+/* Mantra band */
+@keyframes mantraScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.mantra-track {
+  animation: mantraScroll 42s linear infinite;
+}
+
+/* Sheet entrance */
+@keyframes sheetIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.sheet-in {
+  animation: sheetIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
-  50% {
-    transform: scale(1.08) translateY(-1px);
-    filter: drop-shadow(0 0 12px #D4AF37);
+
+  .flame,
+  .mantra-track,
+  .sheet-in {
+    animation: none;
   }
 }
 
-.animate-diya {
-  animation: diyaFlicker 2.5s ease-in-out infinite;
-}
+/* Print only the receipt */
+@media print {
+  body * {
+    visibility: hidden;
+  }
 
-/* Subtle Shimmer */
-@keyframes goldShimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
 
-.animate-shimmer {
-  background-size: 200% 100%;
-  animation: goldShimmer 4s infinite linear;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 9px;
-}
-::-webkit-scrollbar-track {
-  background: #23120C;
-}
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #D4AF37 0%, #926E17 100%);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #FFE27A;
+  .print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    box-shadow: none;
+    border: none;
+  }
 }

@@ -1,6 +1,7 @@
 /**
  * src/services/checkoutService.ts
- * Orchestrates order initiation, Razorpay modal launch, payment verification, and receipt generation.
+ * Orchestrates order initiation, the payment step (Razorpay, or a simulated test payment
+ * when the server is in demo mode), and server-side payment verification.
  */
 import { apiRequest } from './apiClient';
 import { loadRazorpayScript } from './razorpayLoader';
@@ -8,45 +9,79 @@ import {
   CreateOrderRequest,
   CreateOrderResponse,
   VerifyPaymentRequest,
-  VerifyPaymentResponse,
-  ProductOffering
+  VerifyPaymentResponse
 } from '../types/api';
 import { RazorpayOptions, RazorpayPaymentSuccessPayload } from '../types/razorpay';
 
 export interface InitiateCheckoutParams {
   request: CreateOrderRequest;
-  offering: ProductOffering;
+  description: string;
+  confirmTestPayment: () => Promise<boolean>;
   onSuccess: (receipt: VerifyPaymentResponse) => void;
   onError: (error: Error) => void;
   onDismiss?: () => void;
 }
 
 export async function initiateRazorpayCheckout(params: InitiateCheckoutParams): Promise<void> {
-  const { request, offering, onSuccess, onError, onDismiss } = params;
+  const { request, description, confirmTestPayment, onSuccess, onError, onDismiss } = params;
 
   try {
-    // Step 1: Ensure Razorpay SDK is loaded
-    await loadRazorpayScript();
-
-    // Step 2: Request server to calculate authoritative total and create Razorpay order
+    // Step 1: Server computes the authoritative total and creates the gateway order
     const orderData = await apiRequest<CreateOrderResponse>('/orders/create-order', {
       method: 'POST',
       body: JSON.stringify(request),
-      timeoutMs: 10000
+      timeoutMs: 15000
     });
 
-    if (!orderData || !orderData.success || !orderData.razorpayOrderId) {
-      throw new Error(orderData?.message || 'Failed to initialize temple offering order with payment gateway.');
+    const verifyAndFinish = async (response: RazorpayPaymentSuccessPayload) => {
+      try {
+        const verificationPayload: VerifyPaymentRequest = {
+          orderId: orderData.orderId,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature
+        };
+
+        const verifyResult = await apiRequest<VerifyPaymentResponse>('/orders/verify-payment', {
+          method: 'POST',
+          body: JSON.stringify(verificationPayload),
+          timeoutMs: 15000
+        });
+
+        onSuccess(verifyResult);
+      } catch (verifyErr: any) {
+        onError(
+          new Error(
+            `We could not confirm your payment. If money was deducted, please call +91 98256 00778 with Payment ID ${response.razorpay_payment_id}. (${verifyErr.message})`
+          )
+        );
+      }
+    };
+
+    // Step 2a: Demo mode has no gateway, so ask for an explicit test confirmation
+    if (orderData.isDemo) {
+      if (await confirmTestPayment()) {
+        await verifyAndFinish({
+          razorpay_order_id: orderData.razorpayOrderId,
+          razorpay_payment_id: `pay_demo_${Date.now()}`,
+          razorpay_signature: 'demo_mock_signature'
+        });
+      } else if (onDismiss) {
+        onDismiss();
+      }
+      return;
     }
 
-    // Step 3: Configure Razorpay modal options
+    // Step 2b: Live payment through the Razorpay modal
+    await loadRazorpayScript();
+
     const options: RazorpayOptions = {
-      key: orderData.key || 'rzp_test_placeholder',
+      key: orderData.key,
       amount: orderData.amount, // in paise
       currency: orderData.currency || 'INR',
-      name: 'Salahkareshwar Mahadev Tirth (पुण्य पासपोर्ट)',
-      description: `${offering.title} (Sankalp: ${request.customer.sankalpName || request.customer.name})`,
-      image: typeof window !== 'undefined' ? `${window.location.origin}/punya-passport-logo.jpg` : '/punya-passport-logo.jpg',
+      name: 'Salahkareshwar Mahadev Tirth',
+      description,
+      image: `${window.location.origin}/punya-passport-logo.jpg`,
       order_id: orderData.razorpayOrderId,
       prefill: {
         name: request.customer.name,
@@ -55,44 +90,12 @@ export async function initiateRazorpayCheckout(params: InitiateCheckoutParams): 
       },
       notes: {
         orderNumber: orderData.orderNumber,
-        sankalpName: request.customer.sankalpName,
-        gotra: request.customer.gotra,
-        offeringTitle: offering.title
+        offering: description
       },
       theme: {
-        color: '#8B0000', // Deep Sanctum Crimson / Temple Maroon
-        backdrop_color: 'rgba(26, 20, 18, 0.85)'
+        color: '#7A5B1E'
       },
-      handler: async (response: RazorpayPaymentSuccessPayload) => {
-        try {
-          // Step 4: Dispatch payment verification tokens to server
-          const verificationPayload: VerifyPaymentRequest = {
-            orderId: orderData.orderId,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature
-          };
-
-          const verifyResult = await apiRequest<VerifyPaymentResponse>('/orders/verify-payment', {
-            method: 'POST',
-            body: JSON.stringify(verificationPayload),
-            timeoutMs: 12000
-          });
-
-          if (!verifyResult || !verifyResult.success) {
-            throw new Error(verifyResult?.message || 'Cryptographic payment verification failed.');
-          }
-
-          // Step 5: Notify devotee with verified receipt
-          onSuccess(verifyResult);
-        } catch (verifyErr: any) {
-          onError(
-            new Error(
-              `Payment verification alert: ${verifyErr.message}. If payment was deducted, reference Payment ID ${response.razorpay_payment_id} with our temple helpdesk.`
-            )
-          );
-        }
-      },
+      handler: verifyAndFinish,
       modal: {
         ondismiss: () => {
           if (onDismiss) onDismiss();
@@ -102,10 +105,9 @@ export async function initiateRazorpayCheckout(params: InitiateCheckoutParams): 
       }
     };
 
-    // Step 6: Launch modal
     const rzp = new window.Razorpay(options);
     rzp.open();
   } catch (error: any) {
-    onError(error instanceof Error ? error : new Error(error.message || 'Payment initiation failed'));
+    onError(error instanceof Error ? error : new Error(error.message || 'Payment could not be started.'));
   }
 }

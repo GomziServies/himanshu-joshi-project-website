@@ -1,171 +1,93 @@
 import React from 'react';
-import { VerifyPaymentResponse, DevoteeCustomer, ProductOffering } from '../../types/api';
-import { Printer, X, ShieldCheck, HeartHandshake, Landmark } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { CheckoutLine, DevoteeCustomer, VerifyPaymentResponse } from '../../types/api';
+import { Diya } from '../layout/Ornaments';
 
 interface SacredReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
   receiptData: VerifyPaymentResponse;
   devotee: DevoteeCustomer;
-  offering: ProductOffering;
+  lines: CheckoutLine[];
 }
+
+const Row: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
+  <div className="flex items-baseline justify-between gap-4 border-b border-ivory-200 py-2 last:border-0">
+    <dt className="shrink-0 text-ink-muted">{label}</dt>
+    <dd className="text-right font-medium text-ink">{value}</dd>
+  </div>
+);
 
 export const SacredReceiptModal: React.FC<SacredReceiptModalProps> = ({
   isOpen,
   onClose,
   receiptData,
   devotee,
-  offering
+  lines
 }) => {
   if (!isOpen) return null;
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const { address } = devotee;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      {/* Modal Container */}
-      <div className="relative w-full max-w-2xl bg-[#FFFDF9] text-[#1A1412] rounded-2xl shadow-2xl border-2 border-[#D4AF37] p-6 sm:p-8 my-8 print:p-0 print:border-none print:shadow-none print:bg-white print:w-full">
-        {/* Close Button (Hidden on Print) */}
-        <button
-          onClick={onClose}
-          type="button"
-          className="absolute top-4 right-4 p-2 text-stone-500 hover:text-stone-900 rounded-full hover:bg-stone-200 transition-colors print:hidden cursor-pointer"
-          aria-label="Close receipt"
-        >
-          <X className="w-6 h-6" />
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-sanctum/80 p-4 backdrop-blur-sm">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="receipt-title"
+        className="print-area my-8 w-full max-w-lg overflow-hidden rounded-2xl bg-ivory-50 shadow-2xl"
+      >
+        <div className="jaali bg-sanctum px-6 pb-6 pt-5 text-center">
+          <Diya className="mx-auto h-16 w-16" />
+          <p lang="hi" className="mt-1 font-deva text-2xl text-marigold-400">हर हर महादेव</p>
+          <h2 id="receipt-title" className="mt-1 font-title text-2xl text-brass-300">Your offering is received</h2>
+          <p className="mt-1 text-ivory-200/80">
+            Thank you, {devotee.name}. May Mahadev bless you and your family.
+          </p>
+        </div>
 
-        {/* Sacred Header with Punya Passport Medallion */}
-        <div className="text-center border-b-2 border-[#D4AF37]/40 pb-6 mb-6 space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border-2 border-[#D4AF37] overflow-hidden shadow-md mb-1 bg-[#2A0E08]">
-            <img
-              src="/punya-passport-logo.jpg"
-              alt="पुण्य पासपोर्ट - सलाहकारेश्वर महादेव तीर्थ"
-              className="w-full h-full object-cover"
+        <div className="px-6 py-5">
+          <dl>
+            <Row label="Receipt no." value={receiptData.receiptNumber} />
+            <Row label="Order no." value={receiptData.orderNumber} />
+            <Row
+              label="Offering"
+              value={lines.map((line) => (
+                <span key={line.product._id} className="block">
+                  {line.product.title} × {line.quantity}
+                </span>
+              ))}
             />
-          </div>
-          <p className="text-xs font-serif font-black tracking-widest text-[#FF7722] uppercase">
-            ॥ श्री सलाहकारेश्वर विजयते ॥
+            {devotee.gotra && <Row label="Gotra" value={devotee.gotra} />}
+            <Row
+              label="Send to"
+              value={`${address.street}, ${address.city}, ${address.state} - ${address.postalCode}`}
+            />
+            <Row
+              label="Amount"
+              value={<span className="text-2xl font-bold text-sindoor-600">₹{receiptData.amount?.toLocaleString('en-IN')}</span>}
+            />
+          </dl>
+
+          <p className="mt-4 text-center text-sm text-ink-muted">
+            श्री सलाहकारेश्वर महादेव तीर्थ, Gotri, Vadodara
+            <br />
+            e-PAN ABETS6872M · +91 98256 00778
           </p>
-          <h2 className="text-2xl sm:text-3xl font-serif font-black text-[#6D071A]">
-            श्री सलाहकारेश्वर महादेव तीर्थ
-          </h2>
-          <p className="text-xs font-serif text-stone-700 font-semibold tracking-wider">
-            पुण्य पासपोर्ट (Punya Passport) • Sacred Consecration & Seva Receipt
-          </p>
-          <div className="text-[11px] text-stone-600 font-mono flex flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-1">
-            <span>Gotri, Vadodara (Gujarat)</span>
-            <span>•</span>
-            <span>e-PAN: <strong className="text-stone-900">ABETS6872M</strong></span>
-            <span>•</span>
-            <span>Udyam: <strong className="text-stone-900">UDYAM-GJ-24-0064289</strong></span>
-          </div>
-        </div>
 
-        {/* Vedic Blessing */}
-        <div className="bg-[#FAF4EB] border border-[#D4AF37]/50 rounded-xl p-4 text-center mb-6">
-          <p className="font-serif text-[#6D071A] font-bold text-sm sm:text-base italic">
-            "ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्। उर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय माऽमृतात्॥"
-          </p>
-          <p className="text-xs text-stone-600 mt-1 font-serif">
-            May Mahadev’s supreme grace, longevity, and auspicious prosperity illuminate your family lineage.
-          </p>
-        </div>
-
-        {/* Itemized Order & Financial Breakdown */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm mb-6 bg-white p-4 rounded-xl border border-stone-200">
-          <div>
-            <span className="text-stone-500 text-xs uppercase block font-sans">Official Receipt Number</span>
-            <span className="font-mono font-bold text-[#6D071A]">{receiptData.receiptNumber}</span>
+          <div className="mt-5 flex justify-end gap-3 print:hidden">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-2 rounded-full border border-brass-500 px-5 py-2 font-medium text-ink hover:bg-ivory-100"
+            >
+              <Printer className="h-4 w-4" />
+              Print
+            </button>
+            <button type="button" onClick={onClose} className="btn-offer !px-6 !py-2 !text-base">
+              Done
+            </button>
           </div>
-          <div>
-            <span className="text-stone-500 text-xs uppercase block font-sans">Tirth Order Number</span>
-            <span className="font-mono font-bold text-stone-800">{receiptData.orderNumber}</span>
-          </div>
-          <div>
-            <span className="text-stone-500 text-xs uppercase block font-sans">Consecrated Seva / Offering</span>
-            <span className="font-semibold text-stone-900 font-serif">{offering.title}</span>
-          </div>
-          <div>
-            <span className="text-stone-500 text-xs uppercase block font-sans">Net Dakshina Amount</span>
-            <span className="font-bold text-xl text-[#6D071A] font-serif">₹{receiptData.amount?.toLocaleString('en-IN')}</span>
-          </div>
-        </div>
-
-        {/* Sankalp & Devotee Credentials */}
-        <div className="border border-stone-200 rounded-xl p-4 text-sm mb-6 bg-[#FAF4EB]">
-          <h4 className="font-serif font-bold text-[#6D071A] mb-2 text-sm flex items-center gap-2">
-            <HeartHandshake className="w-4 h-4 text-[#FF7722]" /> 
-            <span>Devotee Vedic Sankalp Particulars (यजमान संकल्प)</span>
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-serif">
-            <div>
-              <span className="text-stone-500 block font-sans">Yajman Name:</span>
-              <strong className="text-stone-900 text-sm">{devotee.name}</strong>
-            </div>
-            <div>
-              <span className="text-stone-500 block font-sans">Sankalp Gotra:</span>
-              <strong className="text-stone-900 text-sm">{devotee.gotra || 'Kashyapa'}</strong>
-            </div>
-            {devotee.nakshatra && (
-              <div>
-                <span className="text-stone-500 block font-sans">Janma Nakshatra:</span>
-                <strong className="text-stone-900">{devotee.nakshatra}</strong>
-              </div>
-            )}
-            <div>
-              <span className="text-stone-500 block font-sans">Prayer Intention:</span>
-              <strong className="text-stone-900">{devotee.prayerIntention || 'Family Peace & Prosperity'}</strong>
-            </div>
-          </div>
-
-          <div className="mt-3 pt-3 border-t border-[#D4AF37]/30 text-xs">
-            <span className="text-stone-500 block font-sans">Consecrated Prasad Speed Post Address:</span>
-            <p className="text-stone-900 font-medium">
-              {devotee.address.street}, {devotee.address.city}, {devotee.address.state} -{' '}
-              {devotee.address.postalCode}, {devotee.address.country}
-            </p>
-          </div>
-        </div>
-
-        {/* Official Bank Settlement Metadata */}
-        <div className="p-3 bg-white rounded-xl border border-stone-200 text-[11px] text-stone-600 mb-6 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Landmark className="w-4 h-4 text-[#6D071A]" />
-            <span>Bank: <strong>Kotak Mahindra Bank, Gotri Branch</strong></span>
-          </div>
-          <span>A/c: <strong className="font-mono">2847327173</strong></span>
-          <span>IFSC: <strong className="font-mono">KKBK0002747</strong></span>
-          <span>UPI: <strong className="font-mono text-emerald-800">Salahkareshwar@kotak</strong></span>
-        </div>
-
-        {/* Trust Badges */}
-        <div className="flex items-center justify-between text-xs text-stone-500 border-t border-stone-200 pt-4 mb-6">
-          <span className="flex items-center gap-1.5 font-medium text-emerald-800">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            100% Cryptographically Verified & Logged in Tirth Ledger
-          </span>
-          <span className="text-stone-600 font-serif">Helpline: +91 98256 00778</span>
-        </div>
-
-        {/* Action Buttons (Print / Done) */}
-        <div className="flex items-center justify-end gap-3 print:hidden">
-          <button
-            onClick={handlePrint}
-            type="button"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#D4AF37] text-[#6D071A] bg-amber-50 hover:bg-amber-100 font-semibold text-sm transition-colors cursor-pointer"
-          >
-            <Printer className="w-4 h-4" /> Print Official Receipt
-          </button>
-          <button
-            onClick={onClose}
-            type="button"
-            className="px-6 py-2.5 rounded-lg bg-[#6D071A] hover:bg-[#520513] text-[#FFE885] font-semibold text-sm transition-colors shadow-md cursor-pointer border border-[#D4AF37]/40"
-          >
-            हर हर महादेव (Done)
-          </button>
         </div>
       </div>
     </div>
