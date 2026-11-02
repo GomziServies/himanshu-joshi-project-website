@@ -97,6 +97,90 @@
   animation: sheetIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ---------- Sacred receipt (parchi) ---------- */
+
+/* The slip unrolls and settles, correcting its own tilt */
+@keyframes parchiIn {
+  0% { opacity: 0; transform: translateY(26px) rotate(-1.6deg) scale(0.96); }
+  60% { opacity: 1; transform: translateY(0) rotate(0.5deg) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+
+.parchi-in {
+  animation: parchiIn 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Each printed line is inked in turn */
+@keyframes parchiRowIn {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.parchi-row {
+  animation: parchiRowIn 0.42s ease-out both;
+}
+
+/* The temple seal is pressed onto the paper */
+@keyframes parchiSeal {
+  0% { opacity: 0; transform: rotate(-26deg) scale(2.1); }
+  55% { opacity: 0.95; transform: rotate(-11deg) scale(0.92); }
+  75% { transform: rotate(-13deg) scale(1.04); }
+  100% { opacity: 0.88; transform: rotate(-12deg) scale(1); }
+}
+
+.parchi-seal {
+  animation: parchiSeal 0.72s cubic-bezier(0.3, 1.4, 0.5, 1) 0.75s both;
+}
+
+/* Lamplight sweeps across the dark header twice, then rests */
+@keyframes parchiShimmer {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(220%); }
+}
+
+.parchi-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 233, 176, 0.22) 50%, transparent 62%);
+  animation: parchiShimmer 2.6s ease-in-out 0.5s 2;
+}
+
+/* Marigold petals drifting down behind the slip */
+@keyframes petalFall {
+  0% { opacity: 0; transform: translate3d(0, -12vh, 0) rotate(0deg); }
+  12% { opacity: 0.8; }
+  100% { opacity: 0; transform: translate3d(var(--drift, 20px), 104vh, 0) rotate(var(--spin, 420deg)); }
+}
+
+.petal {
+  position: absolute;
+  top: 0;
+  border-radius: 60% 60% 55% 55% / 70% 70% 40% 40%;
+  animation: petalFall var(--dur, 9s) linear var(--delay, 0s) infinite;
+}
+
+/* Torn lower edge of the slip, cut out with a repeating mask */
+.parchi-tear-bottom {
+  height: 10px;
+  background: #FDF9F0;
+  -webkit-mask-image: radial-gradient(9px 10px at 9px -1px, transparent 98%, #000 100%);
+  mask-image: radial-gradient(9px 10px at 9px -1px, transparent 98%, #000 100%);
+  -webkit-mask-size: 18px 10px;
+  mask-size: 18px 10px;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+}
+
+/* Dotted leader between a label and its value, like a printed temple slip */
+.leader {
+  flex: 1 1 auto;
+  margin: 0 0.5rem 0.3rem;
+  border-bottom: 1px dotted #C8B49A;
+  min-width: 1rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -104,13 +188,35 @@
 
   .flame,
   .mantra-track,
-  .sheet-in {
+  .sheet-in,
+  .parchi-in,
+  .parchi-row,
+  .parchi-seal,
+  .parchi-shimmer::after,
+  .petal {
     animation: none;
+  }
+
+  .parchi-row,
+  .parchi-seal {
+    opacity: 1;
+    transform: none;
   }
 }
 
-/* Print only the receipt */
+/* Print only the receipt, as a clean temple slip */
+@page {
+  size: A5 portrait;
+  margin: 10mm;
+}
+
 @media print {
+  html,
+  body {
+    background: #fff;
+    height: auto;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -118,13 +224,42 @@
   .print-area,
   .print-area * {
     visibility: visible;
+    /* Keep the brass and sindoor inks instead of letting the browser drop them */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .print-area {
     position: absolute;
     inset: 0 auto auto 0;
     width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
     box-shadow: none;
     border: none;
+  }
+
+  /* Nothing on the slip animates or arrives late on paper */
+  .print-area .parchi-in,
+  .print-area .parchi-row,
+  .print-area .parchi-seal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .print-area .parchi-seal {
+    transform: rotate(-12deg);
+    opacity: 0.88;
+  }
+
+  .print-area .parchi-shimmer::after {
+    display: none;
+  }
+
+  .print-hide,
+  .petal {
+    display: none !important;
   }
 }
