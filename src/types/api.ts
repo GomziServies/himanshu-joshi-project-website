@@ -24,20 +24,10 @@ export interface CheckoutLine {
   quantity: number;
 }
 
-export interface DevoteeAddress {
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
-
 export interface DevoteeCustomer {
   name: string;
   email: string;
   phone: string;
-  gotra: string;
-  address: DevoteeAddress;
 }
 
 export interface CreateOrderRequest {

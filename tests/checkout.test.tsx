@@ -10,9 +10,7 @@ const request: CreateOrderRequest = {
     name: 'Devotee Sharma',
     email: 'sharma@example.com',
     phone: '+919876543210',
-    sankalpName: 'Devotee Sharma',
-    gotra: 'Kashyapa',
-    address: { street: '12 Temple St', city: 'Vadodara', state: 'Gujarat', postalCode: '390012', country: 'India' }
+    sankalpName: 'Devotee Sharma'
   },
   items: [{ productId: offering._id, quantity: 1 }]
 };

@@ -60,10 +60,6 @@ function fillCheckoutForm() {
   fill(/Full name/i, 'Amit Sharma');
   fill(/Mobile number/i, '9876543210');
   fill(/Email/i, 'amit@example.com');
-  fill(/House and street/i, '12 Shiv Nagar');
-  fill(/City/i, 'Vadodara');
-  fill(/PIN code/i, '390012');
-  fill(/State/i, 'Gujarat');
 }
 
 beforeEach(() => {

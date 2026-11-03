@@ -24,7 +24,7 @@ const STEPS = [
   {
     numeral: '१',
     title: 'Share your details',
-    text: 'Your name, gotra and the address to send the Shivling to.'
+    text: 'Your name, mobile number and email.'
   },
   {
     numeral: '२',

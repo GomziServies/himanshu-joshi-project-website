@@ -38,7 +38,7 @@ export const Hero: React.FC<HeroProps> = ({ price, hasChoice = false, actionLabe
           Bring home a Shivling blessed at the temple
         </p>
         <p className="mt-3 max-w-md text-lg leading-relaxed text-ivory-200/85">
-          Your name and gotra are taken in the sankalp at Salahkareshwar Mahadev Tirth, Gotri, Vadodara.
+          Your name is taken in the sankalp at Salahkareshwar Mahadev Tirth, Gotri, Vadodara.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">

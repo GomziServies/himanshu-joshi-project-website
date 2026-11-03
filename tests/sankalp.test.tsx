@@ -22,10 +22,6 @@ function fillValidForm() {
   fill(/Full name/i, 'Amit Sharma');
   fill(/Mobile number/i, '+91 98765 43210');
   fill(/Email/i, 'amit@sharma.org');
-  fill(/House and street/i, 'B-108 Shiv Kripa, Gotri Road');
-  fill(/City/i, 'Vadodara');
-  fill(/PIN code/i, '390012');
-  fill(/State/i, 'Gujarat');
 }
 
 describe('Checkout form', () => {
@@ -63,10 +59,6 @@ describe('Checkout form', () => {
     expect(screen.getByText(/enter your full name/i)).toBeInTheDocument();
     expect(screen.getByText(/valid 10-digit mobile/i)).toBeInTheDocument();
     expect(screen.getByText(/valid email/i)).toBeInTheDocument();
-    expect(screen.getByText(/house and street\./i)).toBeInTheDocument();
-    expect(screen.getByText(/enter your city/i)).toBeInTheDocument();
-    expect(screen.getByText(/select your state/i)).toBeInTheDocument();
-    expect(screen.getByText(/PIN code must be 6 digits/i)).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
@@ -77,7 +69,7 @@ describe('Checkout form', () => {
     expect(screen.getByText(/valid 10-digit mobile/i)).toBeInTheDocument();
   });
 
-  it('submits a trimmed customer, with gotra optional', () => {
+  it('submits a trimmed customer, with only name, mobile and email', () => {
     const onSubmit = vi.fn();
     render(<SankalpDrawer lines={lines} isOpen onClose={vi.fn()} onSubmit={onSubmit} />);
 
@@ -87,15 +79,7 @@ describe('Checkout form', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       name: 'Amit Sharma',
       phone: '+91 98765 43210',
-      email: 'amit@sharma.org',
-      gotra: '',
-      address: {
-        street: 'B-108 Shiv Kripa, Gotri Road',
-        city: 'Vadodara',
-        state: 'Gujarat',
-        postalCode: '390012',
-        country: 'India'
-      }
+      email: 'amit@sharma.org'
     });
   });
 

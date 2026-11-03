@@ -142,7 +142,6 @@ export const SacredReceiptModal: React.FC<SacredReceiptModalProps> = ({
 
   if (!isOpen) return null;
 
-  const { address } = devotee;
   const now = new Date();
   const issuedOn = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   const sealDate = now.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -232,12 +231,6 @@ export const SacredReceiptModal: React.FC<SacredReceiptModalProps> = ({
                         {line.product.title} × {line.quantity}
                       </span>
                     ))}
-                  />
-                  {devotee.gotra && <Row label="Gotra" value={devotee.gotra} index={nextIndex()} />}
-                  <Row
-                    label="Send to"
-                    index={nextIndex()}
-                    value={`${address.street}, ${address.city}, ${address.state} - ${address.postalCode}`}
                   />
                 </dl>
 

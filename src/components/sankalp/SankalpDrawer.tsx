@@ -11,24 +11,10 @@ interface SankalpDrawerProps {
   error?: string | null;
 }
 
-const INDIAN_STATES = [
-  'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh',
-  'Chhattisgarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana',
-  'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand', 'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep',
-  'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry',
-  'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand',
-  'West Bengal'
-];
-
 const EMPTY_FORM = {
   name: '',
   phone: '',
-  email: '',
-  gotra: '',
-  street: '',
-  city: '',
-  state: '',
-  postalCode: ''
+  email: ''
 };
 
 type FormValues = typeof EMPTY_FORM;
@@ -43,10 +29,6 @@ function validate(values: FormValues): FormErrors {
   if (!/^(91)?[6-9]\d{9}$/.test(phone)) errors.phone = 'Please enter a valid 10-digit mobile number.';
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) errors.email = 'Please enter a valid email address.';
-  if (values.street.trim().length < 5) errors.street = 'Please enter your house and street.';
-  if (!values.city.trim()) errors.city = 'Please enter your city.';
-  if (!values.state) errors.state = 'Please select your state.';
-  if (!/^[1-9]\d{5}$/.test(values.postalCode.trim())) errors.postalCode = 'PIN code must be 6 digits.';
   return errors;
 }
 
@@ -83,7 +65,7 @@ export const SankalpDrawer: React.FC<SankalpDrawerProps> = ({
     id: `checkout-${field}`,
     value: values[field],
     'aria-invalid': Boolean(errors[field]),
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
       setValues((prev) => ({ ...prev, [field]: e.target.value }))
   });
 
@@ -96,15 +78,7 @@ export const SankalpDrawer: React.FC<SankalpDrawerProps> = ({
     onSubmit({
       name: values.name.trim(),
       phone: values.phone.trim(),
-      email: values.email.trim(),
-      gotra: values.gotra.trim(),
-      address: {
-        street: values.street.trim(),
-        city: values.city.trim(),
-        state: values.state,
-        postalCode: values.postalCode.trim(),
-        country: 'India'
-      }
+      email: values.email.trim()
     });
   };
 
@@ -153,54 +127,16 @@ export const SankalpDrawer: React.FC<SankalpDrawerProps> = ({
               {errors.name && <p className="field-error">{errors.name}</p>}
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="checkout-phone" className="field-label">Mobile number</label>
-                <input {...bind('phone')} type="tel" autoComplete="tel" inputMode="tel" className="field" />
-                {errors.phone && <p className="field-error">{errors.phone}</p>}
-              </div>
-              <div>
-                <label htmlFor="checkout-gotra" className="field-label">
-                  Gotra <span className="font-normal text-ink-muted">(optional)</span>
-                </label>
-                <input {...bind('gotra')} type="text" className="field" />
-              </div>
+            <div>
+              <label htmlFor="checkout-phone" className="field-label">Mobile number</label>
+              <input {...bind('phone')} type="tel" autoComplete="tel" inputMode="tel" className="field" />
+              {errors.phone && <p className="field-error">{errors.phone}</p>}
             </div>
 
             <div>
               <label htmlFor="checkout-email" className="field-label">Email (for your receipt)</label>
               <input {...bind('email')} type="email" autoComplete="email" inputMode="email" className="field" />
               {errors.email && <p className="field-error">{errors.email}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="checkout-street" className="field-label">House and street</label>
-              <input {...bind('street')} type="text" autoComplete="street-address" className="field" />
-              {errors.street && <p className="field-error">{errors.street}</p>}
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="checkout-city" className="field-label">City</label>
-                <input {...bind('city')} type="text" autoComplete="address-level2" className="field" />
-                {errors.city && <p className="field-error">{errors.city}</p>}
-              </div>
-              <div>
-                <label htmlFor="checkout-postalCode" className="field-label">PIN code</label>
-                <input {...bind('postalCode')} type="text" autoComplete="postal-code" inputMode="numeric" maxLength={6} className="field" />
-                {errors.postalCode && <p className="field-error">{errors.postalCode}</p>}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="checkout-state" className="field-label">State</label>
-              <select {...bind('state')} autoComplete="address-level1" className="field">
-                <option value="">Select state</option>
-                {INDIAN_STATES.map((state) => (
-                  <option key={state} value={state}>{state}</option>
-                ))}
-              </select>
-              {errors.state && <p className="field-error">{errors.state}</p>}
             </div>
           </div>
 
